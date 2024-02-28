@@ -16,3 +16,7 @@ body{
     text-align: center;
     border: 4px outset darkgrey;
 }
+.win{
+    background-color: antiquewhite;
+    color: #000;
+}
