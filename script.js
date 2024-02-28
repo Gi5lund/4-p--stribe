@@ -208,6 +208,9 @@ function start() {
                     board[row + 2][col - 2] === currentPlayer &&
                     board[row + 3][col - 3] === currentPlayer
                 ) {
+                    for(let i=0; i<4; i++){
+                        document.querySelector(`[data-row="${row+i}"][data-col="${col-i}"]`).classList.add("win");
+                    }
                     winner=currentPlayer;
                 }
             }
