@@ -35,13 +35,15 @@ function displayBoard(){
             }
         }
     }
+    //this function needs to be refactored: if a winner is found, the game should stop and the winner should be displayed
     function displayWinner(winner){
         const winnerDisplay=document.querySelector("#status");
         winnerDisplay.innerHTML="";
-        if(winner===0){
-            winnerDisplay.textContent="Undecided!";
+        if(winner!==0){
+            winnerDisplay.textContent=`Player ${winner} wins! GAME OVER!`;
+            document.querySelector("#board").removeEventListener("click", boardClicked);
         }else{
-            winnerDisplay.textContent=`currentPlayer ${winner} wins!`;
+            winnerDisplay.textContent=`Player ${winner}'s turn`;
         }
     }
 
@@ -98,21 +100,23 @@ function start() {
     function switchPlayer() {
         if(currentPlayer===1){
             currentPlayer=2;
-            setTimeout(computerTurn, 1000);
+            displayWinner(currentPlayer);
+            setTimeout(computerTurn, 4000);
             // computerTurn();
         }else{
             currentPlayer=1;
+            displayWinner(currentPlayer);
             playerTurn();
         }
     }
     function playerTurn(){
         // what
-        console.log("currentPlayer turn");
+        
             }
             
             function computerTurn(){
-                console.log("computer turn");
-                // setTimeout(computerMove, 1000);
+                
+                
                 const availableCols=[];
                 
                     for(let col=0; col<WIDTHcols; col++){
@@ -138,13 +142,14 @@ function start() {
         writeToColumn(col, currentPlayer);
     // console.table(model);
     displayBoard();
-    checkForWin(model,currentPlayer);
     switchPlayer();
+    checkForWin(model,currentPlayer);
+    
     return true;
     }else{
     return false;
     }
-   
+} 
     function checkForWin(board, currentPlayer) {
         let winner=0;
         // Check horizontally
@@ -220,4 +225,3 @@ function start() {
     }
     
 
-}
