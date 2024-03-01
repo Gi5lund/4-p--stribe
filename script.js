@@ -5,12 +5,22 @@ window.addEventListener("load", start);
 function makeBoardclickable() {
     document.querySelector("#board").addEventListener("click", boardClicked);
     } 
+ function makeButtonClickable(){
+    document.querySelector("#restart").addEventListener("click", restartGame) ;
+ } 
+ function restartGame(){    
+    emptyBoard();
+    document.querySelector("#restart").classList.add('hide')
+    console.log("restartGame");
+    document.querySelector("#board").addEventListener("click", boardClicked);
+    
+ }  
 function boardClicked(event) {
     // console.log("boardClicked");
     if(event.target.classList.contains("cell")) {
      const cell=event.target;
     // console.log(cell);
-    const row=cell.dataset.row;
+   
     const col=cell.dataset.col;
     // console.log(`clicked on cell: ${row}, ${col}`);
     selectCol(col);
@@ -36,20 +46,23 @@ function displayBoard(){
         }
     }
     //this function needs to be refactored: if a winner is found, the game should stop and the winner should be displayed
-    function displayWinner(winner){
+    function displayWinner(status, player){
+        const nextPlayer=player==1?"2":"1";
         const winnerDisplay=document.querySelector("#status");
         winnerDisplay.innerHTML="";
-        if(winner!==0){
-            winnerDisplay.textContent=`Player ${winner} wins! GAME OVER!`;
+        if(status!==0){
+            winnerDisplay.textContent=`Player ${player} wins! GAME OVER!`;
             document.querySelector("#board").removeEventListener("click", boardClicked);
+            document.querySelector("#restart").classList.remove('hide');
+            exit;
         }else{
-            winnerDisplay.textContent=`Player ${winner}'s turn`;
+            winnerDisplay.textContent=`Player ${nextPlayer}'s turn`;
         }
     }
 
 // ********************************MODEL****************************************************'
 const HEIGHT=6;
-const WIDTHcols=7;
+const WIDTH=7;
 
 const model = [
     [0, 0, 0, 0, 0, 0, 0], // row: 6, col:7 øverste venste hjørne er row:0, col:0 nederste højre hjørne er row:5, col:6
@@ -69,14 +82,13 @@ function writeToColumn(col,currentPlayer){
         }
     }
 }
-function emptyBoard(model){
-   for (let row=0; row<model.length; row++){
-       for(let col=0; col<model[row].length; col++){
-           model[row][col]=0;
-       }
-   }
+function emptyBoard(){
+    const model = Array.of(HEIGHT).fill(0).map(() => Array.of(WIDTH).fill(0));
+    displayBoard();
+    return model;
 }
-// I still need this
+
+// I still need this or I should totally refactor model....
     function readFromCell(row,col) {  
         return model[row][col];
         }
@@ -92,25 +104,27 @@ function emptyBoard(model){
 // *******************************CONTROLLER****************************************************
 function start() {
     console.log("javascript kører") 
-   emptyBoard(model)
+   //  emptyBoard(model);
     displayBoard();
     makeBoardclickable();
+    makeButtonClickable();
     }
     let currentPlayer=1;
     function switchPlayer() {
         if(currentPlayer===1){
             currentPlayer=2;
-            displayWinner(currentPlayer);
-            setTimeout(computerTurn, 4000);
+            // displayWinner(0,currentPlayer);
+            setTimeout(computerTurn, 2000);
             // computerTurn();
         }else{
             currentPlayer=1;
-            displayWinner(currentPlayer);
+            // displayWinner(0,currentPlayer);
             playerTurn();
         }
     }
     function playerTurn(){
         // what
+        
         
             }
             
@@ -119,7 +133,8 @@ function start() {
                 
                 const availableCols=[];
                 
-                    for(let col=0; col<WIDTHcols; col++){
+                    for(let col=0; col<WIDTH
+                    ; col++){
                         if(readColumnHeight(col)<HEIGHT){
                             availableCols.push([col]);
                         }
@@ -142,8 +157,9 @@ function start() {
         writeToColumn(col, currentPlayer);
     // console.table(model);
     displayBoard();
-    switchPlayer();
     checkForWin(model,currentPlayer);
+    switchPlayer();
+    
     
     return true;
     }else{
@@ -151,7 +167,7 @@ function start() {
     }
 } 
     function checkForWin(board, currentPlayer) {
-        let winner=0;
+        let status=0;
         // Check horizontally
         for (let row = 0; row < board.length; row++) {
             for (let col = 0; col <= board[row].length - 4; col++) {
@@ -164,8 +180,8 @@ function start() {
                     for(let i=0; i<4; i++){
                         document.querySelector(`[data-row="${row}"][data-col="${col+i}"]`).classList.add("win");
                     }
+                    status=1;
                    
-                    winner=currentPlayer;
                 }
             }
         }
@@ -182,7 +198,7 @@ function start() {
                     for(let i=0; i<4; i++){
                         document.querySelector(`[data-row="${row+i}"][data-col="${col}"]`).classList.add("win");
                     }
-                    winner=currentPlayer;
+                    status=1;
                 }
             }
         }
@@ -199,7 +215,7 @@ function start() {
                     for(let i=0; i<4; i++){
                         document.querySelector(`[data-row="${row+i}"][data-col="${col+i}"]`).classList.add("win");
                     }
-                    winner=currentPlayer;
+                    status=1;
                 }
             }
         }
@@ -216,12 +232,12 @@ function start() {
                     for(let i=0; i<4; i++){
                         document.querySelector(`[data-row="${row+i}"][data-col="${col-i}"]`).classList.add("win");
                     }
-                    winner=currentPlayer;
+                    status=1;
                 }
             }
         }
     
-        displayWinner(winner);
+        displayWinner(status, currentPlayer);
     }
     
 

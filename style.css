@@ -20,3 +20,6 @@ body{
     background-color: antiquewhite;
     color: #000;
 }
+.hide{
+    visibility: hidden;
+}
